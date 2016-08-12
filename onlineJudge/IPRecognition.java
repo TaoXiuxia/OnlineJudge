@@ -38,10 +38,15 @@ E类地址240.0.0.0~255.255.255.255
 
 **/
 
+/**
+ *
+ * 本题中需要注意的是在判断掩码的时候，将掩码转化成二进制时，每个掩码都是转化成 8位 二进制
+ *
+**/
 
 import java.util.Scanner;
 
-public class IP {
+public class Main {
 	static int A = 0;
 	static int B = 0;
 	static int C = 0;
@@ -91,7 +96,7 @@ public class IP {
 			return;
 		}
 
-		if (!isValidMask(mask)) {
+		if (!isValidMask(mask) || !isValidIp(ip)) {
 			InValid++;
 			return;
 		}
@@ -118,6 +123,7 @@ public class IP {
 
 		if (ip[0] >= 240 && ip[0] <= 255) {
 			E++;
+			
 		}
 	}
 
@@ -141,13 +147,33 @@ public class IP {
 	}
 
 	/**
+	 * 判断ip是否是合法的
+	 * @param ip
+	 * @return 合法返回true
+	 */
+	public static boolean isValidIp(int[] ip) {
+		if (ip.length != 4) {
+			return false;
+		}
+
+		for (int i = 0; i < 4; i++) {
+			if (ip[i] > 255 || ip[i] < 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
 	 * 是否是合法的子网掩码
 	 * 
 	 * @param mask
-	 * @return
+	 * @return 合法返回true，不合法返回false
 	 */
 	public static boolean isValidMask(int[] mask) {
-		
+		if(mask.length!=4 ){
+			return false;
+		}
 		for (int i = 0; i < 4; i++) {
 			if (mask[i] < 0 || mask[i] > 255) {
 				return false;
@@ -156,14 +182,29 @@ public class IP {
 
 		String maskBinary = "";
 		for (int i = 0; i < 4; i++) {
-			maskBinary += Integer.toBinaryString(mask[i]);
+			maskBinary += binary(mask[i]);
 		}
-
+		
 		int index = maskBinary.indexOf("0");
 		maskBinary = maskBinary.substring(index + 1);	//index+1 --> 防止出现IndexOutOfBoundsException：在mask全都是1的情况下，index是-1，
-		if (maskBinary.contains("1")) {
+		
+		if (index == -1 || maskBinary.contains("1")) {
 			return false;
 		}
 		return true;
+	}
+	
+	//将int数值转换成8位的二进制数
+	public static String binary(int num){
+		String res=""; 
+		String temp = Integer.toBinaryString(num);
+		if(temp.length()==8){
+			return temp;
+		}
+		int len0 = 8-temp.length();
+		for(int i=0;i<len0;i++){
+			res+="0";
+		}
+		return res+temp;
 	}
 }
